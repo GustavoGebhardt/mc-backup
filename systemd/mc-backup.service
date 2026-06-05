@@ -1,0 +1,16 @@
+[Unit]
+Description=Minecraft Server Backup
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+User=root
+EnvironmentFile=/etc/mc-backup/.env
+ExecStart=/usr/local/bin/mc-backup --config /etc/mc-backup/.env
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mc-backup
+
+# Safety: kill if backup takes more than 1 hour
+TimeoutStartSec=3600

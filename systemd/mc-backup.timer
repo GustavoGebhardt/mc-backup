@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Minecraft backup every hour
+Requires=mc-backup.service
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

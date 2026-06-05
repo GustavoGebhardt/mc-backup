@@ -1,0 +1,4 @@
+.env
+dist/
+mc-backup
+*.tar.gz
