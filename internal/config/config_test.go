@@ -169,6 +169,30 @@ NFS_MOUNT_POINT=/mnt/mc-backup
 	if cfg.RCON.Host != "localhost" {
 		t.Errorf("default RCON.Host: got %q, want localhost", cfg.RCON.Host)
 	}
+	if cfg.NFS.BackupDir != "backups" {
+		t.Errorf("default NFS.BackupDir: got %q, want backups", cfg.NFS.BackupDir)
+	}
+}
+
+func TestLoad_NFSBackupDir_CustomValue(t *testing.T) {
+	env := writeEnv(t, `
+MINECRAFT_DIR=/srv/minecraft/world
+RCON_HOST=localhost
+RCON_PORT=25575
+RCON_PASSWORD=secret
+NFS_HOST=192.168.1.10
+NFS_SHARE=/nfs/Storage
+NFS_MOUNT_POINT=/mnt/mc-backup
+NFS_BACKUP_DIR=Backups/minecraft-server
+`)
+	cfg, err := config.Load(env)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if cfg.NFS.BackupDir != "Backups/minecraft-server" {
+		t.Errorf("NFS.BackupDir: got %q, want Backups/minecraft-server", cfg.NFS.BackupDir)
+	}
 }
 
 func TestLoad_EnvFileNotFound(t *testing.T) {

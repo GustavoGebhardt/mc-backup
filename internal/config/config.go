@@ -16,9 +16,10 @@ type RCONConfig struct {
 }
 
 type NFSConfig struct {
-	Host       string
-	Share      string
+	Host      string
+	Share     string
 	MountPoint string
+	BackupDir  string
 }
 
 type RetentionConfig struct {
@@ -70,6 +71,7 @@ func Load(envFile string) (*Config, error) {
 			Host:       get("NFS_HOST"),
 			Share:      get("NFS_SHARE"),
 			MountPoint: get("NFS_MOUNT_POINT"),
+			BackupDir:  stringDefault(get("NFS_BACKUP_DIR"), "backups"),
 		},
 		Retention: RetentionConfig{
 			Hourly:  intDefault(get("RETENTION_HOURLY"), 24),
