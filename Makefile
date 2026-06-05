@@ -8,7 +8,7 @@ build:
 		-v $(PWD):/src \
 		-v $(GOMODCACHE):/go/pkg/mod \
 		-w /src \
-		golang:1.24-alpine \
+		golang:1.26-alpine \
 		go build -ldflags "-X main.version=$(VERSION)" -o mc-backup ./cmd/mc-backup
 
 test:
@@ -16,7 +16,7 @@ test:
 		-v $(PWD):/src \
 		-v $(GOMODCACHE):/go/pkg/mod \
 		-w /src \
-		golang:1.24-alpine \
+		golang:1.26-alpine \
 		go test ./...
 
 clean:
