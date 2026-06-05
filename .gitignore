@@ -1,4 +1,4 @@
 .env
 dist/
-mc-backup
+/mc-backup
 *.tar.gz
