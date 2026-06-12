@@ -44,9 +44,13 @@ func main() {
 	ctx, cancel := context.WithTimeout(ctx, cfg.BackupTimeout)
 	defer cancel()
 
+	start := time.Now()
 	if err := run(ctx, log, cfg, notifiers); err != nil {
 		log.Error("backup failed", "error", err)
-		notify.All(context.Background(), log, notifiers, "[Backup] Backup failed! Check the server logs.")
+		notify.All(context.Background(), log, notifiers, fmt.Sprintf(
+			"[Backup] Failed after %s — check server logs.",
+			time.Since(start).Round(time.Second),
+		))
 		os.Exit(1)
 	}
 }
@@ -61,7 +65,7 @@ func run(ctx context.Context, log *slog.Logger, cfg *config.Config, notifiers []
 			cfg.Retention.Weekly, cfg.Retention.Monthly),
 	)
 
-	notify.All(ctx, log, notifiers, "[Backup] Starting backup...")
+	notify.All(ctx, log, notifiers, fmt.Sprintf("[Backup] Starting backup of %s...", cfg.MinecraftDir))
 
 	log.Info("connecting to RCON", "host", cfg.RCON.Host, "port", cfg.RCON.Port)
 	client, err := rcon.Dial(cfg.RCON.Host, cfg.RCON.Port, cfg.RCON.Password)
@@ -147,12 +151,19 @@ func run(ctx context.Context, log *slog.Logger, cfg *config.Config, notifiers []
 		}
 	}
 
+	totalDuration := time.Since(archiveStart).Round(time.Second)
+	sizeMB := fmt.Sprintf("%.0f MB", float64(result.Size)/1024/1024)
+
 	log.Info("backup completed successfully",
 		"archive", filepath.Base(remotePath),
-		"total_duration", time.Since(archiveStart).Round(time.Second),
+		"size", sizeMB,
+		"total_duration", totalDuration,
 	)
 
-	notify.All(ctx, log, notifiers, "[Backup] Backup completed successfully!")
+	notify.All(ctx, log, notifiers, fmt.Sprintf(
+		"[Backup] Completed in %s — %s (%s)",
+		totalDuration, filepath.Base(remotePath), sizeMB,
+	))
 
 	return nil
 }
